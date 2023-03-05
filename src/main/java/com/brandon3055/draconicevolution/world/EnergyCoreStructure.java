@@ -11,13 +11,26 @@ import com.brandon3055.draconicevolution.blocks.tileentity.TileEnergyStorageCore
 import com.brandon3055.draconicevolution.blocks.tileentity.TileInvisECoreBlock;
 import com.brandon3055.draconicevolution.client.gui.GuiEnergyCore;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+import com.brandon3055.draconicevolution.utils.BlockStateMultiblockHelper;
+import com.brandon3055.draconicevolution.utils.BlockStateMultiblockStorage;
 import com.brandon3055.draconicevolution.utils.LogHelper;
+
+import gregtech.api.GregTechAPI;
+import gregtech.api.unification.material.Material;
+import gregtech.api.unification.material.Materials;
+import gregtech.api.unification.material.properties.IMaterialProperty;
+import gregtech.api.unification.material.properties.MaterialProperties;
+import gregtech.api.unification.stack.MaterialStack;
+import gregtech.common.blocks.MetaBlocks;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -31,15 +44,68 @@ import java.util.List;
 /**
  * Created by brandon3055 on 1/4/2016.
  */
-public class EnergyCoreStructure extends MultiBlockHelper {
-    private final int FLAG_RENDER = 0;
+public class EnergyCoreStructure extends BlockStateMultiblockHelper {
+        private final int FLAG_RENDER = 0;
     private final int FLAG_FORME = 1;
     private final int FLAG_REVERT = 2;
-    private MultiBlockStorage[] structureTiers = new MultiBlockStorage[8];
+    private BlockStateMultiblockStorage[] structureTiers = new BlockStateMultiblockStorage[8];
     private TileEnergyStorageCore core;
     public static boolean coreForming = false;
+    private Material gtDraconium, gtAwakened;
+
+    private IBlockState[] e, X, R, D, A;
 
     public EnergyCoreStructure initialize(TileEnergyStorageCore core) {
+
+        // Initialize Custom Materials
+        gtDraconium = GregTechAPI.MaterialRegistry.get("draconium");
+        gtAwakened = GregTechAPI.MaterialRegistry.get("awakened_draconium");
+
+        // Empty
+        e = new IBlockState[]{Blocks.AIR.getDefaultState()};
+
+        // Energy Storage Core
+        X = new IBlockState[]{Block.REGISTRY.getObject(
+                new ResourceLocation("draconicevolution:energy_storage_core"))
+                .getDefaultState()};
+
+        // Redstone
+        R = new IBlockState[]{Blocks.REDSTONE_BLOCK.getDefaultState()};
+
+        // Draconium
+        if (gtDraconium != null)
+            D = new IBlockState[]{
+                    MetaBlocks.COMPRESSED.get(gtDraconium).getBlock(gtDraconium),
+                    Block.REGISTRY.getObject(
+                            new ResourceLocation("draconicevolution:draconium_block"))
+                            .getDefaultState()};
+        else{
+            D = new IBlockState[]{
+                    Block.REGISTRY.getObject(
+                            new ResourceLocation("draconicevolution:draconium_block"))
+                            .getDefaultState()};
+            LogHelper.error("[GT Material Structure Loader] Couldn't find CT material Draconium.");
+
+        }
+
+        // Awakened Draconium
+        if (gtAwakened != null)
+            A = new IBlockState[]{
+                    MetaBlocks.COMPRESSED.get(gtAwakened).getBlock(gtAwakened),
+                    Block.REGISTRY.getObject(
+                            new ResourceLocation("draconicevolution:draconic_block"))
+                            .getDefaultState()};
+        else{
+            A = new IBlockState[]{
+                    Block.REGISTRY.getObject(
+                            new ResourceLocation("draconicevolution:draconic_block"))
+                            .getDefaultState()};
+            LogHelper.error("[GT Material Structure Loader] Couldn't find CT material Awakened Draconium.");
+
+        }
+
+
+        // Initialize other
         this.core = core;
         structureTiers[0] = buildTier1();
         structureTiers[1] = buildTier2();
@@ -153,16 +219,20 @@ public class EnergyCoreStructure extends MultiBlockHelper {
     }
 
     @Override
-    public void forBlock(String name, World world, BlockPos pos, BlockPos startPos, int flag) {
-        if (name.isEmpty() || name.equals("draconicevolution:energy_storage_core")) {
+    public void forBlock(IBlockState state, World world, BlockPos pos, BlockPos startPos, int flag) {
+        if (state == null)
             return;
-        }
+
+        if (state.getBlock().equals(Blocks.AIR) ||
+                state.getBlock().equals(Block.REGISTRY.getObject(
+                        new ResourceLocation("draconicevolution:energy_storage_core"))))
+            return;
 
         //region Render Build Guide
 
         if (flag == FLAG_RENDER) {
             if (world.isRemote) {
-                renderBuildGuide(name, world, pos, startPos, flag);
+                renderBuildGuide(state, world, pos, startPos, flag);
             }
         }
 
@@ -174,7 +244,7 @@ public class EnergyCoreStructure extends MultiBlockHelper {
             world.setBlockState(pos, DEFeatures.invisECoreBlock.getDefaultState());
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileInvisECoreBlock) {
-                ((TileInvisECoreBlock) tile).blockName = name;
+                ((TileInvisECoreBlock) tile).blockName = state.getBlock().getUnlocalizedName();
                 ((TileInvisECoreBlock) tile).setController(core);
             }
         }
@@ -194,9 +264,7 @@ public class EnergyCoreStructure extends MultiBlockHelper {
     }
 
     @SideOnly(Side.CLIENT)
-    private void renderBuildGuide(String name, World world, BlockPos pos, BlockPos startPos, int flag) {
-        Block block = Block.REGISTRY.getObject(new ResourceLocation(name));
-
+    private void renderBuildGuide(IBlockState state, World world, BlockPos pos, BlockPos startPos, int flag) {
         Vec3D corePos = Vec3D.getCenter(startPos.subtract(getCoreOffset(core.tier.value)));
         double dist = Utils.getDistanceAtoB(corePos, Vec3D.getCenter(pos));
         double pDist = Minecraft.getMinecraft().player.getDistance(corePos.x, corePos.y, corePos.z);
@@ -206,13 +274,9 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         }
 
         IBlockState atPos = world.getBlockState(pos);
-        boolean invalid = !world.isAirBlock(pos) && (atPos.getBlock().getRegistryName() == null || !atPos.getBlock().getRegistryName().toString().equals(name));
+        boolean invalid = !world.isAirBlock(pos) && (atPos.getBlock().getRegistryName() == null || !atPos.getBlock().getRegistryName().toString().equals(state.getBlock().getUnlocalizedName()));
 
         if (dist + 2 > pDist && !invalid) {
-            return;
-        }
-
-        if (name.equals("") || name.equals("air")) {
             return;
         }
 
@@ -223,8 +287,6 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         if (invalid) {
             alpha = (int) (((Math.sin(ClientEventHandler.elapsedTicks / 20D) + 1D) / 2D) * 255D) << 24;
         }
-
-        IBlockState state = block.getDefaultState();
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(translation.getX(), translation.getY(), translation.getZ());
@@ -258,20 +320,16 @@ public class EnergyCoreStructure extends MultiBlockHelper {
 
     //region Structure Builders
 
-    private MultiBlockStorage buildTier1() {
-        MultiBlockStorage storage = new MultiBlockStorage(1, this);
-        String X = "draconicevolution:energy_storage_core";
+    private BlockStateMultiblockStorage buildTier1() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(1, this);
 
         storage.addRow(X);
 
         return storage;
     }
 
-    private MultiBlockStorage buildTier2() {
-        MultiBlockStorage storage = new MultiBlockStorage(3, this);
-        String e = "";
-        String X = "draconicevolution:energy_storage_core";
-        String D = "draconicevolution:draconium_block";
+    private BlockStateMultiblockStorage buildTier2() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(3, this);
 
         storage.addRow(e, e, e);
         storage.addRow(e, D, e);
@@ -290,10 +348,8 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         return storage;
     }
 
-    private MultiBlockStorage buildTier3() {
-        MultiBlockStorage storage = new MultiBlockStorage(3, this);
-        String X = "draconicevolution:energy_storage_core";
-        String D = "draconicevolution:draconium_block";
+    private BlockStateMultiblockStorage buildTier3() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(3, this);
 
         storage.addRow(D, D, D);
         storage.addRow(D, D, D);
@@ -312,12 +368,8 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         return storage;
     }
 
-    private MultiBlockStorage buildTier4() {
-        MultiBlockStorage storage = new MultiBlockStorage(5, this);
-        String e = "";
-        String X = "draconicevolution:energy_storage_core";
-        String D = "draconicevolution:draconium_block";
-        String R = "minecraft:redstone_block";
+    private BlockStateMultiblockStorage buildTier4() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(5, this);
 
         storage.addRow(e, e, e, e, e);
         storage.addRow(e, D, D, D, e);
@@ -356,12 +408,8 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         return storage;
     }
 
-    private MultiBlockStorage buildTier5() {
-        MultiBlockStorage storage = new MultiBlockStorage(7, this);
-        String e = "";
-        String X = "draconicevolution:energy_storage_core";
-        String D = "draconicevolution:draconium_block";
-        String R = "minecraft:redstone_block";
+    private BlockStateMultiblockStorage buildTier5() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(7, this);
 
         storage.addRow(e, e, e, e, e, e, e);
         storage.addRow(e, e, e, e, e, e, e);
@@ -428,12 +476,8 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         return storage;
     }
 
-    private MultiBlockStorage buildTier6() {
-        MultiBlockStorage storage = new MultiBlockStorage(9, this);
-        String e = "";
-        String X = "draconicevolution:energy_storage_core";
-        String D = "draconicevolution:draconium_block";
-        String R = "minecraft:redstone_block";
+    private BlockStateMultiblockStorage buildTier6() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(9, this);
 
         storage.addRow(e, e, e, e, e, e, e, e, e);
         storage.addRow(e, e, e, e, e, e, e, e, e);
@@ -536,13 +580,8 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         return storage;
     }
 
-    private MultiBlockStorage buildTier7() {
-        MultiBlockStorage storage = new MultiBlockStorage(11, this);
-        String e = "";
-        String X = "draconicevolution:energy_storage_core";
-        String D = "draconicevolution:draconium_block";
-        String R = "minecraft:redstone_block";
-
+    private BlockStateMultiblockStorage buildTier7() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(11, this);
 
         storage.addRow(e, e, e, e, e, e, e, e, e, e, e);
         storage.addRow(e, e, e, e, e, e, e, e, e, e, e);
@@ -690,13 +729,8 @@ public class EnergyCoreStructure extends MultiBlockHelper {
         return storage;
     }
 
-    private MultiBlockStorage buildTierOMG() {
-        MultiBlockStorage storage = new MultiBlockStorage(13, this);
-        String e = "";
-        String X = "draconicevolution:energy_storage_core";
-        String A = "draconicevolution:draconic_block";
-        String D = "draconicevolution:draconium_block";
-//        String d = "draconicevolution:draconium_block";
+    private BlockStateMultiblockStorage buildTierOMG() {
+        BlockStateMultiblockStorage storage = new BlockStateMultiblockStorage(13, this);
 
         //region Hard
         if (DEConfig.hardMode) {
@@ -1102,13 +1136,13 @@ public class EnergyCoreStructure extends MultiBlockHelper {
     //endregion
 
     @Override
-    public boolean checkBlock(String name, World world, BlockPos pos) {
+    public boolean checkBlock(IBlockState state, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockName.equals(name)) {
+        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockName.equals(state.getBlock().getUnlocalizedName())) {
             return true;
         }
         else {
-            return super.checkBlock(name, world, pos);
+            return super.checkBlock(state, world, pos);
         }
     }
 
@@ -1118,9 +1152,11 @@ public class EnergyCoreStructure extends MultiBlockHelper {
     }
 
     @Override
-    public void setBlock(String name, World world, BlockPos pos) {
-        if (!name.equals("draconicevolution:energy_storage_core") && name.length() > 0) {
-            super.setBlock(name, world, pos);
+    public void setBlock(IBlockState state, World world, BlockPos pos) {
+        if (state == null)
+            return;
+        if (!state.getBlock().equals(Block.REGISTRY.getObject(new ResourceLocation("draconicevolution:energy_storage_core")))) {
+            super.setBlock(state, world, pos);
         }
     }
 }
