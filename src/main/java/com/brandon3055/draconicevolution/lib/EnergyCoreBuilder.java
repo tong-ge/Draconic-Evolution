@@ -47,15 +47,19 @@ public class EnergyCoreBuilder implements IProcess {
         EnergyCoreStructure structure = core.coreStructure;
         BlockStateMultiblockStorage storage = structure.getStorageForTier(core.tier.value);
         BlockPos start = core.getPos().add(structure.getCoreOffset(core.tier.value));
-        Map<BlockPos, Block> structureBlocks = new HashMap<>();
-        storage.forEachBlockState(start, structureBlocks::put);
+        Map<BlockPos, IBlockState> structureBlocks = new HashMap<>();
+        storage.forEachBlockState(start, (key1, value) -> {
+            Map<String, Block> blockCache = new HashMap<>();
+            structureBlocks.put(key1, value);
+        });
 
         World world = core.getWorld();
         for (BlockPos key : structureBlocks.keySet()) {
-            Block targetBlock = structureBlocks.get(key);
+            IBlockState neededState = structureBlocks.get(key);
+            Block targetBlock = neededState.getBlock();
             if (targetBlock == null) continue;
             if (world.isAirBlock(key)) {
-                workList.put(key, targetBlock.getDefaultState());
+                workList.put(key, neededState);
                 continue;
             }
             IBlockState state = world.getBlockState(key);
@@ -105,9 +109,9 @@ public class EnergyCoreBuilder implements IProcess {
         if (handler == null) return false;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack inSlot = handler.getStackInSlot(i);
-            if (!inSlot.isEmpty() && inSlot.getItem() == toExtract.getItem()) {
+            if (!inSlot.isEmpty() && inSlot.getItem().equals(toExtract.getItem()) && inSlot.getMetadata() == toExtract.getMetadata()) {
                 ItemStack extracted = handler.extractItem(i, 1, false);
-                if (!extracted.isEmpty() && extracted.getItem() == toExtract.getItem()) {
+                if (!extracted.isEmpty() && extracted.getItem().equals(toExtract.getItem())) {
                     return true;
                 }
             }

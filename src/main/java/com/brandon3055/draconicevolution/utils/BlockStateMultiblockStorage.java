@@ -86,12 +86,12 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
         }
     }
 
-    public void forEachBlockState(BlockPos startPos, BiConsumer<BlockPos, Block> consumer) {
+    public void forEachBlockState(BlockPos startPos, BiConsumer<BlockPos, IBlockState> consumer) {
         for (int x = 0; x < blockStorage.length; x++) {
             for (int y = 0; y < blockStorage[0].length; y++) {
                 for (int z = 0; z < blockStorage[0][0].length; z++) {
                     if (!blockStorage[x][y][z][0].getBlock().equals(Blocks.AIR)){
-                        consumer.accept(new BlockPos(x, y, z).add(startPos), blockStorage[x][y][z][0].getBlock());
+                        consumer.accept(new BlockPos(x, y, z).add(startPos), blockStorage[x][y][z][0]);
                     }
                 }
             }
