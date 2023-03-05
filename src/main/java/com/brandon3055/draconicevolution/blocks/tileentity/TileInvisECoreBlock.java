@@ -27,7 +27,7 @@ import java.util.Collections;
 public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, IMovableStructure {
 
     public final ManagedVec3I coreOffset = register("coreOffset", new ManagedVec3I(new Vec3I(0, -1, 0))).syncViaContainer().saveToTile().trigerUpdate().finish();
-    public IBlockState blockState;
+    public String blockName = "";
 
 
     //region IMultiBlock
@@ -79,12 +79,12 @@ public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, 
     }
 
     public void revert() {
-        if (blockState.equals(Block.REGISTRY.getObject(new ResourceLocation("draconicevolution:particle_generator")).getDefaultState())) {
+        if (blockName.equals("draconicevolution:particle_generator")) {
             world.setBlockState(pos, DEFeatures.particleGenerator.getDefaultState().withProperty(ParticleGenerator.TYPE, "stabilizer"));
             return;
         }
 
-        Block block = blockState.getBlock();
+        Block block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
         if (block != Blocks.AIR) {
             world.setBlockState(pos, block.getDefaultState());
         }
@@ -104,48 +104,25 @@ public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound compound = new NBTTagCompound();
-        if (blockState != null){
-            compound.setString("BlockName", Block.getIdFromBlock(blockState.getBlock()) + " " + blockState.getBlock().getMetaFromState(blockState));
-        }
-        else
-            compound.setString("BlockName", "");
+        compound.setString("BlockName", blockName);
         coreOffset.toNBT(compound);
         return new SPacketUpdateTileEntity(pos, 0, compound);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        String string = pkt.getNbtCompound().getString("BlockName");
-        readData(string);
+        blockName = pkt.getNbtCompound().getString("BlockName");
         coreOffset.fromNBT(pkt.getNbtCompound());
     }
 
     @Override
     public void writeExtraNBT(NBTTagCompound compound) {
-        if (blockState != null){
-            compound.setString("BlockName", Block.getIdFromBlock(blockState.getBlock()) + " " + blockState.getBlock().getMetaFromState(blockState));
-        }
-        else
-            compound.setString("BlockName", "");
+        compound.setString("BlockName", blockName);
     }
 
     @Override
     public void readExtraNBT(NBTTagCompound compound) {
-        String string = compound.getString("BlockName");
-        readData(string);
-    }
-
-    private void readData(String string) {
-        if (string.isEmpty()){
-            blockState = null;
-        }
-        else {
-            String[] strings = string.split(" ");
-            if (strings.length != 2)
-                blockState = null;
-
-            blockState = Block.getBlockById(Integer.parseInt(strings[0])).getStateFromMeta(Integer.parseInt(strings[1]));
-        }
+        blockName = compound.getString("BlockName");
     }
 
     @Override
@@ -163,7 +140,7 @@ public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, 
         if (controller instanceof TileEnergyCoreStabilizer) {
             return ((TileEnergyCoreStabilizer) controller).canMove();
         }
-        else if (blockState.equals(Block.REGISTRY.getObject(new ResourceLocation("draconicevolution:particle_generator")).getDefaultState())) {
+        else if (blockName.equals("draconicevolution:particle_generator")) {
             return EnumActionResult.FAIL;
         }
         return EnumActionResult.SUCCESS;

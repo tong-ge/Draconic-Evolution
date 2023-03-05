@@ -19,12 +19,10 @@ import com.brandon3055.draconicevolution.client.DEParticles;
 import com.brandon3055.draconicevolution.integration.computers.ArgHelper;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 import com.brandon3055.draconicevolution.integration.funkylocomotion.IMovableStructure;
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
@@ -175,7 +173,7 @@ public class TileEnergyPylon extends TileBCBase implements IEnergyReceiver, IEne
                 world.setBlockState(pos.add(0, 1, 0), DEFeatures.invisECoreBlock.getDefaultState());
                 TileEntity tile = world.getTileEntity(pos.add(0, 1, 0));
                 if (tile instanceof TileInvisECoreBlock) {
-                    ((TileInvisECoreBlock) tile).blockState = Block.REGISTRY.getObject(new ResourceLocation("minecraft:glass")).getDefaultState();
+                    ((TileInvisECoreBlock) tile).blockName = "minecraft:glass";
                     ((TileInvisECoreBlock) tile).setController(this);
                 }
                 sphereOnTop.value = true;
@@ -185,7 +183,7 @@ public class TileEnergyPylon extends TileBCBase implements IEnergyReceiver, IEne
                 world.setBlockState(pos.add(0, -1, 0), DEFeatures.invisECoreBlock.getDefaultState());
                 TileEntity tile = world.getTileEntity(pos.add(0, -1, 0));
                 if (tile instanceof TileInvisECoreBlock) {
-                    ((TileInvisECoreBlock) tile).blockState = Block.REGISTRY.getObject(new ResourceLocation("minecraft:glass")).getDefaultState();
+                    ((TileInvisECoreBlock) tile).blockName = "minecraft:glass";
                     ((TileInvisECoreBlock) tile).setController(this);
                 }
                 sphereOnTop.value = false;
@@ -219,7 +217,7 @@ public class TileEnergyPylon extends TileBCBase implements IEnergyReceiver, IEne
 
     private boolean isGlass(BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState.equals("minecraft:glass");
+        return tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockName.equals("minecraft:glass");
     }
 
     //endregion

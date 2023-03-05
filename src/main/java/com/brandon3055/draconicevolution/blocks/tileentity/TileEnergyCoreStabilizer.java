@@ -3,6 +3,7 @@ package com.brandon3055.draconicevolution.blocks.tileentity;
 
 import com.brandon3055.brandonscore.blocks.TileBCBase;
 import com.brandon3055.brandonscore.client.particle.BCEffectHandler;
+import com.brandon3055.brandonscore.lib.MultiBlockStorage;
 import com.brandon3055.brandonscore.lib.Vec3D;
 import com.brandon3055.brandonscore.lib.Vec3I;
 import com.brandon3055.brandonscore.lib.datamanager.ManagedBool;
@@ -15,7 +16,6 @@ import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.integration.funkylocomotion.IMovableStructure;
 import com.brandon3055.draconicevolution.utils.BlockStateMultiblockStorage;
 import com.brandon3055.draconicevolution.world.EnergyCoreStructure;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,7 +25,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -220,7 +219,7 @@ public class TileEnergyCoreStabilizer extends TileBCBase implements ITickable, I
             TileEntity tile = world.getTileEntity(pos.add(offset));
 
             if (tile instanceof TileInvisECoreBlock) {
-                ((TileInvisECoreBlock) tile).blockState = Block.REGISTRY.getObject(new ResourceLocation("draconicevolution:particle_generator")).getDefaultState();
+                ((TileInvisECoreBlock) tile).blockName = "draconicevolution:particle_generator";
                 ((TileInvisECoreBlock) tile).setController(this);
             }
         }
