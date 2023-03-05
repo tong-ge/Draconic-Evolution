@@ -182,9 +182,10 @@ public class InvisECoreBlock extends BlockBCore implements IRenderOverride, ITil
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-
-        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState.equals(Block.REGISTRY.getObject(new ResourceLocation("minecraft:glass")).getDefaultState())) {
-            return NULL_AABB;
+        if (((TileInvisECoreBlock) tile).blockState != null){
+            if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState.equals(Block.REGISTRY.getObject(new ResourceLocation("minecraft:glass")).getDefaultState())) {
+                return NULL_AABB;
+            }
         }
 
         return super.getCollisionBoundingBox(state, world, pos);
