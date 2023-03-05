@@ -274,7 +274,7 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
         }
 
         IBlockState atPos = world.getBlockState(pos);
-        boolean invalid = !world.isAirBlock(pos) && (atPos.getBlock().getRegistryName() == null || !atPos.getBlock().getRegistryName().toString().equals(state.getBlock().getUnlocalizedName()));
+        boolean invalid = !world.isAirBlock(pos) && (atPos.getBlock().getRegistryName() == null || !atPos.getBlock().equals(state.getBlock()));
 
         if (dist + 2 > pDist && !invalid) {
             return;

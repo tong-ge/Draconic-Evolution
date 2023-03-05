@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -92,7 +93,8 @@ public class EnergyCoreBuilder implements IProcess {
             return;
         }
 
-        ItemStack required = new ItemStack(state.getBlock());
+        ItemStack required = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+
         if (player.capabilities.isCreativeMode || extractItem(required)) {
             world.setBlockState(pos, state);
             SoundType soundtype = state.getBlock().getSoundType(state, world, pos, player);
