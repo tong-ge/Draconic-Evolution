@@ -7,6 +7,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 // Same as MultiblockStorage, but uses IBlockState instead of String, and has fallback block
@@ -50,7 +51,7 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
                     if (!helper.checkBlock(blockStorage[x][y][z][0], world, pos.add(startPos))) {
                         if (!helper.checkBlock(blockStorage[x][y][z][1], world, pos.add(startPos))) {
                             helper.invalidBlock = startPos.add(pos);
-                            helper.expectedBlock = blockStorage[x][y][z][0].getBlock().getLocalizedName();
+                            helper.expectedBlock = Objects.requireNonNull(blockStorage[x][y][z][0].getBlock().getRegistryName()).toString();
                             return false;
                         }
                     }

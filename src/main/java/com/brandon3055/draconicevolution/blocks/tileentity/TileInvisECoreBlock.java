@@ -7,10 +7,12 @@ import com.brandon3055.brandonscore.lib.datamanager.ManagedVec3I;
 import com.brandon3055.draconicevolution.DEFeatures;
 import com.brandon3055.draconicevolution.blocks.ParticleGenerator;
 import com.brandon3055.draconicevolution.integration.funkylocomotion.IMovableStructure;
+import com.brandon3055.draconicevolution.world.EnergyCoreStructure;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -83,13 +85,27 @@ public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, 
             world.setBlockState(pos, DEFeatures.particleGenerator.getDefaultState().withProperty(ParticleGenerator.TYPE, "stabilizer"));
             return;
         }
-
-        Block block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
-        if (block != Blocks.AIR) {
-            world.setBlockState(pos, block.getDefaultState());
+        Block block;
+        if (blockName.equals(EnergyCoreStructure.gtDraconiumName)){
+            if (EnergyCoreStructure.gtDraconium != null){
+                world.setBlockState(pos, EnergyCoreStructure.gtDraconium);
+            }
         }
-        else {
-            world.setBlockToAir(pos);
+        if (blockName.equals(EnergyCoreStructure.gtAwakenedName)){
+            if (EnergyCoreStructure.gtAwakened != null){
+                Block awakenedBlock = EnergyCoreStructure.gtAwakened.getBlock();
+                world.setBlockState(pos, EnergyCoreStructure.gtAwakened);
+            }
+        }
+        else{
+            block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
+
+            if (block != Blocks.AIR) {
+                world.setBlockState(pos, block.getDefaultState());
+            }
+            else {
+                world.setBlockToAir(pos);
+            }
         }
     }
 

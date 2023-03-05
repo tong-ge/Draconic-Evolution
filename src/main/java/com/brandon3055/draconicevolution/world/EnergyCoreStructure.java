@@ -249,11 +249,12 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
             world.setBlockState(pos, DEFeatures.invisECoreBlock.getDefaultState());
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileInvisECoreBlock) {
-                ((TileInvisECoreBlock) tile).blockName = Objects.requireNonNull(state.getBlock().getRegistryName()).toString();
-                if (state == gtDraconium)
+                if (state.equals(gtDraconium))
                     ((TileInvisECoreBlock) tile).blockName = gtDraconiumName;
-                if (state == gtAwakened)
+                if (state.equals(gtAwakened))
                     ((TileInvisECoreBlock) tile).blockName = gtAwakenedName;
+                else
+                    ((TileInvisECoreBlock) tile).blockName = Objects.requireNonNull(state.getBlock().getRegistryName()).toString();
                 ((TileInvisECoreBlock) tile).setController(core);
             }
         }
