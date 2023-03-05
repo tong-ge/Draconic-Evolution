@@ -101,7 +101,7 @@ public class EnergyCoreBuilder implements IProcess {
             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
         }
         else {
-            player.sendMessage(new TextComponentTranslation("ecore.de.assemble_missing_required.txt", state.getBlock().getLocalizedName()).setStyle(new Style().setColor(TextFormatting.RED)));
+            player.sendMessage(new TextComponentTranslation("ecore.de.assemble_missing_required.txt", required.getDisplayName()).setStyle(new Style().setColor(TextFormatting.RED)));
             isDead = true;
         }
     }
