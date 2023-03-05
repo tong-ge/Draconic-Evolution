@@ -4,6 +4,7 @@ import com.brandon3055.brandonscore.lib.MultiBlockStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -51,7 +52,7 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
                     if (!helper.checkBlock(blockStorage[x][y][z][0], world, pos.add(startPos))) {
                         if (!helper.checkBlock(blockStorage[x][y][z][1], world, pos.add(startPos))) {
                             helper.invalidBlock = startPos.add(pos);
-                            helper.expectedBlock = Objects.requireNonNull(blockStorage[x][y][z][0].getBlock().getRegistryName()).toString();
+                            helper.expectedBlock = new ItemStack(blockStorage[x][y][z][0].getBlock(), 1, blockStorage[x][y][z][0].getBlock().getMetaFromState(blockStorage[x][y][z][0])).getDisplayName();
                             return false;
                         }
                     }
