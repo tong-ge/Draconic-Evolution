@@ -40,6 +40,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by brandon3055 on 1/4/2016.
@@ -244,7 +245,7 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
             world.setBlockState(pos, DEFeatures.invisECoreBlock.getDefaultState());
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileInvisECoreBlock) {
-                ((TileInvisECoreBlock) tile).blockName = state.getBlock().getUnlocalizedName();
+                ((TileInvisECoreBlock) tile).blockName = Objects.requireNonNull(state.getBlock().getRegistryName()).toString();
                 ((TileInvisECoreBlock) tile).setController(core);
             }
         }
