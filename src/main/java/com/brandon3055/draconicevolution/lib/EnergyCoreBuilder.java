@@ -48,10 +48,7 @@ public class EnergyCoreBuilder implements IProcess {
         BlockStateMultiblockStorage storage = structure.getStorageForTier(core.tier.value);
         BlockPos start = core.getPos().add(structure.getCoreOffset(core.tier.value));
         Map<BlockPos, Block> structureBlocks = new HashMap<>();
-        storage.forEachBlockState(start, (key1, value) -> {
-            Map<String, Block> blockCache = new HashMap<>();
-            structureBlocks.put(key1, value);
-        });
+        storage.forEachBlockState(start, structureBlocks::put);
 
         World world = core.getWorld();
         for (BlockPos key : structureBlocks.keySet()) {

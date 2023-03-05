@@ -3,6 +3,7 @@ package com.brandon3055.draconicevolution.utils;
 import com.brandon3055.brandonscore.lib.MultiBlockStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -49,7 +50,7 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
                     if (!helper.checkBlock(blockStorage[x][y][z][0], world, pos.add(startPos))) {
                         if (!helper.checkBlock(blockStorage[x][y][z][1], world, pos.add(startPos))) {
                             helper.invalidBlock = startPos.add(pos);
-                            helper.expectedBlock = blockStorage[x][y][z][0];
+                            helper.expectedBlock = blockStorage[x][y][z][0].getBlock().getLocalizedName();
                             return false;
                         }
                     }
@@ -89,7 +90,7 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
         for (int x = 0; x < blockStorage.length; x++) {
             for (int y = 0; y < blockStorage[0].length; y++) {
                 for (int z = 0; z < blockStorage[0][0].length; z++) {
-                    if (!blockStorage[x][y][z][0].getBlock().equals(Block.getBlockFromName("air"))){
+                    if (!blockStorage[x][y][z][0].getBlock().equals(Blocks.AIR)){
                         consumer.accept(new BlockPos(x, y, z).add(startPos), blockStorage[x][y][z][0].getBlock());
                     }
                 }

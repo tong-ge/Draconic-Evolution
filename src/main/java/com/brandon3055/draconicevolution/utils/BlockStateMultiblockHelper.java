@@ -9,7 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockStateMultiblockHelper extends MultiBlockHelper {
-    public IBlockState expectedBlock = null;
+    public BlockPos invalidBlock = null;
+    public String expectedBlock = null;
 
     public boolean checkBlock(IBlockState expectedState, World world, BlockPos pos) {
         IBlockState state = world.getBlockState(pos);
