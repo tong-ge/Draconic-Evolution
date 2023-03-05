@@ -14,6 +14,7 @@ import com.brandon3055.draconicevolution.blocks.ParticleGenerator;
 import com.brandon3055.draconicevolution.client.DEParticles;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.integration.funkylocomotion.IMovableStructure;
+import com.brandon3055.draconicevolution.utils.BlockStateMultiblockStorage;
 import com.brandon3055.draconicevolution.world.EnergyCoreStructure;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -404,9 +405,9 @@ public class TileEnergyCoreStabilizer extends TileBCBase implements ITickable, I
             }
 
             EnergyCoreStructure structure = core.coreStructure;
-            MultiBlockStorage storage = structure.getStorageForTier(core.tier.value);
+            BlockStateMultiblockStorage storage = structure.getStorageForTier(core.tier.value);
             BlockPos start = core.getPos().add(structure.getCoreOffset(core.tier.value));
-            storage.forEachBlock(start, (e, e2) -> blocks.add(e));
+            storage.forEachBlockState(start, (e, e2) -> blocks.add(e));
 
             return blocks;
         }

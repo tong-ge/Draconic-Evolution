@@ -214,7 +214,7 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
         }
     }
 
-    public MultiBlockStorage getStorageForTier(int tier) {
+    public BlockStateMultiblockStorage getStorageForTier(int tier) {
         return structureTiers[tier - 1];
     }
 

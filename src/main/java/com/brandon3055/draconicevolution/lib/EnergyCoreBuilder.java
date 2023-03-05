@@ -3,6 +3,7 @@ package com.brandon3055.draconicevolution.lib;
 import com.brandon3055.brandonscore.handlers.IProcess;
 import com.brandon3055.brandonscore.lib.MultiBlockStorage;
 import com.brandon3055.draconicevolution.blocks.tileentity.TileEnergyStorageCore;
+import com.brandon3055.draconicevolution.utils.BlockStateMultiblockStorage;
 import com.brandon3055.draconicevolution.world.EnergyCoreStructure;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -44,12 +45,12 @@ public class EnergyCoreBuilder implements IProcess {
 
     private void buildWorkList() {
         EnergyCoreStructure structure = core.coreStructure;
-        MultiBlockStorage storage = structure.getStorageForTier(core.tier.value);
+        BlockStateMultiblockStorage storage = structure.getStorageForTier(core.tier.value);
         BlockPos start = core.getPos().add(structure.getCoreOffset(core.tier.value));
         Map<BlockPos, Block> structureBlocks = new HashMap<>();
-        storage.forEachBlock(start, (key1, value) -> {
+        storage.forEachBlockState(start, (key1, value) -> {
             Map<String, Block> blockCache = new HashMap<>();
-            structureBlocks.put(key1, blockCache.computeIfAbsent(value, s -> Block.getBlockFromName(value)));
+            structureBlocks.put(key1, value);
         });
 
         World world = core.getWorld();
