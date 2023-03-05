@@ -1,9 +1,7 @@
 package com.brandon3055.draconicevolution.world;
 
-import com.brandon3055.brandonscore.lib.MultiBlockStorage;
 import com.brandon3055.brandonscore.lib.Vec3D;
 import com.brandon3055.brandonscore.utils.ModelUtils;
-import com.brandon3055.brandonscore.utils.MultiBlockHelper;
 import com.brandon3055.brandonscore.utils.Utils;
 import com.brandon3055.draconicevolution.DEConfig;
 import com.brandon3055.draconicevolution.DEFeatures;
@@ -17,10 +15,6 @@ import com.brandon3055.draconicevolution.utils.LogHelper;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.unification.material.Material;
-import gregtech.api.unification.material.Materials;
-import gregtech.api.unification.material.properties.IMaterialProperty;
-import gregtech.api.unification.material.properties.MaterialProperties;
-import gregtech.api.unification.stack.MaterialStack;
 import gregtech.common.blocks.MetaBlocks;
 
 import net.minecraft.block.Block;
@@ -30,7 +24,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -45,7 +38,7 @@ import java.util.List;
  * Created by brandon3055 on 1/4/2016.
  */
 public class EnergyCoreStructure extends BlockStateMultiblockHelper {
-        private final int FLAG_RENDER = 0;
+    private final int FLAG_RENDER = 0;
     private final int FLAG_FORME = 1;
     private final int FLAG_REVERT = 2;
     private BlockStateMultiblockStorage[] structureTiers = new BlockStateMultiblockStorage[8];
@@ -244,7 +237,7 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
             world.setBlockState(pos, DEFeatures.invisECoreBlock.getDefaultState());
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileInvisECoreBlock) {
-                ((TileInvisECoreBlock) tile).blockName = state.getBlock().getUnlocalizedName();
+                ((TileInvisECoreBlock) tile).blockState = state;
                 ((TileInvisECoreBlock) tile).setController(core);
             }
         }
@@ -1138,7 +1131,7 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
     @Override
     public boolean checkBlock(IBlockState state, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockName.equals(state.getBlock().getUnlocalizedName())) {
+        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState.equals(state.getBlock().getDefaultState())) {
             return true;
         }
         else {

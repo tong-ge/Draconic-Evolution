@@ -89,11 +89,11 @@ public class InvisECoreBlock extends BlockBCore implements IRenderOverride, ITil
 
         if (tile instanceof TileInvisECoreBlock) {
 
-            if (!((TileInvisECoreBlock) tile).blockName.isEmpty() && !player.capabilities.isCreativeMode) {
-                Block block = Block.REGISTRY.getObject(new ResourceLocation(((TileInvisECoreBlock) tile).blockName));
+            if (!((TileInvisECoreBlock) tile).blockState.isEmpty() && !player.capabilities.isCreativeMode) {
+                Block block = Block.REGISTRY.getObject(new ResourceLocation(((TileInvisECoreBlock) tile).blockState));
 
                 if (block != Blocks.AIR) {
-                    if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:particle_generator")) {
+                    if (((TileInvisECoreBlock) tile).blockState.equals("draconicevolution:particle_generator")) {
                         spawnAsEntity(world, pos, new ItemStack(block, 1, 2));
                     }
                     else {
@@ -115,19 +115,19 @@ public class InvisECoreBlock extends BlockBCore implements IRenderOverride, ITil
         TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileInvisECoreBlock) {
-            if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:draconium_block")) {
+            if (((TileInvisECoreBlock) tile).blockState.equals("draconicevolution:draconium_block")) {
                 return new ItemStack(DEFeatures.draconiumBlock);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:draconic_block")) {
+            else if (((TileInvisECoreBlock) tile).blockState.equals("draconicevolution:draconic_block")) {
                 return new ItemStack(DEFeatures.draconicBlock);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:particle_generator")) {
+            else if (((TileInvisECoreBlock) tile).blockState.equals("draconicevolution:particle_generator")) {
                 return new ItemStack(DEFeatures.particleGenerator, 1, 2);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("minecraft:glass")) {
+            else if (((TileInvisECoreBlock) tile).blockState.equals("minecraft:glass")) {
                 return new ItemStack(Blocks.GLASS);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("minecraft:redstone_block")) {
+            else if (((TileInvisECoreBlock) tile).blockState.equals("minecraft:redstone_block")) {
                 return new ItemStack(Blocks.REDSTONE_BLOCK);
             }
         }
@@ -152,7 +152,7 @@ public class InvisECoreBlock extends BlockBCore implements IRenderOverride, ITil
     public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
 
-        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:particle_generator")) {
+        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState.equals("draconicevolution:particle_generator")) {
             IMultiBlockPart controller = ((TileInvisECoreBlock) tile).getController();
 
             if (controller instanceof TileEnergyCoreStabilizer) {
@@ -184,7 +184,7 @@ public class InvisECoreBlock extends BlockBCore implements IRenderOverride, ITil
     public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
 
-        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockName.equals("minecraft:glass")) {
+        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState.equals("minecraft:glass")) {
             return NULL_AABB;
         }
 
