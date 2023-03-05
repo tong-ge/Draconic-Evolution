@@ -1131,7 +1131,10 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
     @Override
     public boolean checkBlock(IBlockState state, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState.equals(state.getBlock().getDefaultState())) {
+        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockState == null)
+            return super.checkBlock(state, world, pos);
+
+        if (((TileInvisECoreBlock) tile).blockState.equals(state.getBlock().getDefaultState())) {
             return true;
         }
         else {
