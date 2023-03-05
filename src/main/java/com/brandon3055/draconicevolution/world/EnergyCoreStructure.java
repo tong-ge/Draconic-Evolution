@@ -52,15 +52,17 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
     private BlockStateMultiblockStorage[] structureTiers = new BlockStateMultiblockStorage[8];
     private TileEnergyStorageCore core;
     public static boolean coreForming = false;
-    private Material gtDraconium, gtAwakened;
+    public static IBlockState gtDraconium, gtAwakened;
+    public static final String gtDraconiumName = "gregtech:draconium";
+    public static final String gtAwakenedName = "gregtech:awakened_draconium";
 
     private IBlockState[] e, X, R, D, A;
 
     public EnergyCoreStructure initialize(TileEnergyStorageCore core) {
 
         // Initialize Custom Materials
-        gtDraconium = GregTechAPI.MaterialRegistry.get("draconium");
-        gtAwakened = GregTechAPI.MaterialRegistry.get("awakened_draconium");
+        Material gtDraconiumMaterial = GregTechAPI.MaterialRegistry.get("draconium");
+        Material gtAwakenedMaterial = GregTechAPI.MaterialRegistry.get("awakened_draconium");
 
         // Empty
         e = new IBlockState[]{Blocks.AIR.getDefaultState()};
@@ -74,25 +76,27 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
         R = new IBlockState[]{Blocks.REDSTONE_BLOCK.getDefaultState()};
 
         // Draconium
-        if (gtDraconium != null)
+        if (gtDraconiumMaterial != null){
             D = new IBlockState[]{
-                    MetaBlocks.COMPRESSED.get(gtDraconium).getBlock(gtDraconium),
+                    MetaBlocks.COMPRESSED.get(gtDraconiumMaterial).getBlock(gtDraconiumMaterial),
                     Block.REGISTRY.getObject(
                             new ResourceLocation("draconicevolution:draconium_block"))
                             .getDefaultState()};
+        }
+
         else{
             D = new IBlockState[]{
                     Block.REGISTRY.getObject(
                             new ResourceLocation("draconicevolution:draconium_block"))
                             .getDefaultState()};
             LogHelper.error("[GT Material Structure Loader] Couldn't find CT material Draconium.");
-
         }
+        gtDraconium = D[0];
 
         // Awakened Draconium
-        if (gtAwakened != null)
+        if (gtAwakenedMaterial != null)
             A = new IBlockState[]{
-                    MetaBlocks.COMPRESSED.get(gtAwakened).getBlock(gtAwakened),
+                    MetaBlocks.COMPRESSED.get(gtAwakenedMaterial).getBlock(gtAwakenedMaterial),
                     Block.REGISTRY.getObject(
                             new ResourceLocation("draconicevolution:draconic_block"))
                             .getDefaultState()};
@@ -102,8 +106,8 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
                             new ResourceLocation("draconicevolution:draconic_block"))
                             .getDefaultState()};
             LogHelper.error("[GT Material Structure Loader] Couldn't find CT material Awakened Draconium.");
-
         }
+        gtAwakened = A[0];
 
 
         // Initialize other
@@ -246,6 +250,10 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileInvisECoreBlock) {
                 ((TileInvisECoreBlock) tile).blockName = Objects.requireNonNull(state.getBlock().getRegistryName()).toString();
+                if (state == gtDraconium)
+                    ((TileInvisECoreBlock) tile).blockName = gtDraconiumName;
+                if (state == gtAwakened)
+                    ((TileInvisECoreBlock) tile).blockName = gtAwakenedName;
                 ((TileInvisECoreBlock) tile).setController(core);
             }
         }
@@ -1139,8 +1147,19 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
     @Override
     public boolean checkBlock(IBlockState state, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileInvisECoreBlock && ((TileInvisECoreBlock) tile).blockName.equals(state.getBlock().getUnlocalizedName())) {
-            return true;
+        if (tile instanceof TileInvisECoreBlock){
+            if (((TileInvisECoreBlock) tile).blockName.equals(Objects.requireNonNull(state.getBlock().getRegistryName()).toString()))
+                return true;
+
+            else if (state.equals(gtDraconium) && ((TileInvisECoreBlock) tile).blockName.equals(gtDraconiumName))
+                return true;
+
+            else if (state.equals(gtAwakened) && ((TileInvisECoreBlock) tile).blockName.equals(gtAwakenedName))
+                return true;
+
+            else
+                return super.checkBlock(state, world, pos);
+
         }
         else {
             return super.checkBlock(state, world, pos);
