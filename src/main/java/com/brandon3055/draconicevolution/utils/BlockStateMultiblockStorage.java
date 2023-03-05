@@ -15,6 +15,11 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
     private int xPos = 0;
     private int yPos = 0;
 
+    public BlockStateMultiblockStorage(int size, BlockStateMultiblockHelper helper) {
+        super(size, helper);
+        blockStorage = new IBlockState[size][size][size][2];
+        this.helper = helper;
+    }
     public void addRow(IBlockState[]... zRow) {
         if (zRow.length > blockStorage.length || zRow.length < blockStorage.length) {
             throw new RuntimeException("[MultiBlockStorage] Attempt to add zRow larger or smaller then defined structure size");
@@ -25,10 +30,14 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
         xPos++;
     }
 
-    public BlockStateMultiblockStorage(int size, BlockStateMultiblockHelper helper) {
-        super(size, helper);
-        blockStorage = new IBlockState[size][size][size][2];
-        this.helper = helper;
+    @Override
+    public void newLayer() {
+        xPos = 0;
+        yPos++;
+
+        if (yPos >= blockStorage.length) {
+            throw new RuntimeException("[MultiBlockStorage] Attempt to add too many layers to structure");
+        }
     }
 
     @Override
