@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import scala.Int;
 
 import java.util.Collections;
 
@@ -30,6 +31,8 @@ public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, 
 
     public final ManagedVec3I coreOffset = register("coreOffset", new ManagedVec3I(new Vec3I(0, -1, 0))).syncViaContainer().saveToTile().trigerUpdate().finish();
     public String blockName = "";
+    public int metaData = 0;
+    public boolean isDefault = true;
 
 
     //region IMultiBlock
@@ -85,27 +88,18 @@ public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, 
             world.setBlockState(pos, DEFeatures.particleGenerator.getDefaultState().withProperty(ParticleGenerator.TYPE, "stabilizer"));
             return;
         }
-        Block block;
-        if (blockName.equals(EnergyCoreStructure.gtDraconiumName)){
-            if (EnergyCoreStructure.gtDraconium != null){
-                world.setBlockState(pos, EnergyCoreStructure.gtDraconium);
-            }
-        }
-        if (blockName.equals(EnergyCoreStructure.gtAwakenedName)){
-            if (EnergyCoreStructure.gtAwakened != null){
-                Block awakenedBlock = EnergyCoreStructure.gtAwakened.getBlock();
-                world.setBlockState(pos, EnergyCoreStructure.gtAwakened);
-            }
-        }
-        else{
-            block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
+        Block block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
+        IBlockState state;
+        if (!block.equals(Blocks.AIR)){
+            if (!isDefault)
+                state = block.getStateFromMeta(metaData);
+            else
+                state = block.getDefaultState();
 
-            if (block != Blocks.AIR) {
-                world.setBlockState(pos, block.getDefaultState());
-            }
-            else {
-                world.setBlockToAir(pos);
-            }
+            world.setBlockState(pos, state);
+        }
+        else {
+            world.setBlockToAir(pos);
         }
     }
 
@@ -120,25 +114,52 @@ public class TileInvisECoreBlock extends TileBCBase implements IMultiBlockPart, 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("BlockName", blockName);
+        if (isDefault)
+            compound.setString("BlockName", blockName);
+        else
+            compound.setString("BlockName", blockName + " " + metaData);
+
         coreOffset.toNBT(compound);
         return new SPacketUpdateTileEntity(pos, 0, compound);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        blockName = pkt.getNbtCompound().getString("BlockName");
+        String[] input = pkt.getNbtCompound().getString("BlockName").split(" ");
+        if (input.length != 2){
+            blockName = input[0];
+            metaData = 0;
+            isDefault = true;
+        }
+        else{
+            blockName = input[0];
+            metaData = Integer.parseInt(input[1]);
+            isDefault = false;
+        }
         coreOffset.fromNBT(pkt.getNbtCompound());
     }
 
     @Override
     public void writeExtraNBT(NBTTagCompound compound) {
-        compound.setString("BlockName", blockName);
+        if (isDefault)
+            compound.setString("BlockName", blockName);
+        else
+            compound.setString("BlockName", blockName + " " + metaData);
     }
 
     @Override
     public void readExtraNBT(NBTTagCompound compound) {
-        blockName = compound.getString("BlockName");
+        String[] input = compound.getString("BlockName").split(" ");
+        if (input.length != 2){
+            blockName = input[0];
+            metaData = 0;
+            isDefault = true;
+        }
+        else{
+            blockName = input[0];
+            metaData = Integer.parseInt(input[1]);
+            isDefault = false;
+        }
     }
 
     @Override

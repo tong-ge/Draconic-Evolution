@@ -52,9 +52,6 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
     private BlockStateMultiblockStorage[] structureTiers = new BlockStateMultiblockStorage[8];
     private TileEnergyStorageCore core;
     public static boolean coreForming = false;
-    public static IBlockState gtDraconium, gtAwakened;
-    public static final String gtDraconiumName = "gregtech:draconium";
-    public static final String gtAwakenedName = "gregtech:awakened_draconium";
 
     private IBlockState[] e, X, R, D, A;
 
@@ -91,7 +88,6 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
                             .getDefaultState()};
             LogHelper.error("[GT Material Structure Loader] Couldn't find CT material Draconium.");
         }
-        gtDraconium = D[0];
 
         // Awakened Draconium
         if (gtAwakenedMaterial != null)
@@ -107,7 +103,6 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
                             .getDefaultState()};
             LogHelper.error("[GT Material Structure Loader] Couldn't find CT material Awakened Draconium.");
         }
-        gtAwakened = A[0];
 
 
         // Initialize other
@@ -249,12 +244,15 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
             world.setBlockState(pos, DEFeatures.invisECoreBlock.getDefaultState());
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileInvisECoreBlock) {
-                if (state.equals(gtDraconium))
-                    ((TileInvisECoreBlock) tile).blockName = gtDraconiumName;
-                if (state.equals(gtAwakened))
-                    ((TileInvisECoreBlock) tile).blockName = gtAwakenedName;
-                else
-                    ((TileInvisECoreBlock) tile).blockName = Objects.requireNonNull(state.getBlock().getRegistryName()).toString();
+                ((TileInvisECoreBlock) tile).blockName = Objects.requireNonNull(state.getBlock().getRegistryName()).toString();
+                if (state.equals(state.getBlock().getDefaultState())){
+                    ((TileInvisECoreBlock) tile).isDefault = true;
+                    ((TileInvisECoreBlock) tile).metaData = 0;
+                }
+                else{
+                    ((TileInvisECoreBlock) tile).isDefault = false;
+                    ((TileInvisECoreBlock) tile).metaData = state.getBlock().getMetaFromState(state);
+                }
                 ((TileInvisECoreBlock) tile).setController(core);
             }
         }
@@ -1150,13 +1148,18 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileInvisECoreBlock){
             if (((TileInvisECoreBlock) tile).blockName.equals(Objects.requireNonNull(state.getBlock().getRegistryName()).toString()))
-                return true;
+                if (((TileInvisECoreBlock) tile).isDefault){
+                    if (state.equals(state.getBlock().getDefaultState()))
+                        return true;
 
-            else if (state.equals(gtDraconium) && ((TileInvisECoreBlock) tile).blockName.equals(gtDraconiumName))
-                return true;
+                    return super.checkBlock(state, world, pos);
+                }
+                else {
+                    if (state.getBlock().getMetaFromState(state) == ((TileInvisECoreBlock) tile).metaData)
+                        return true;
 
-            else if (state.equals(gtAwakened) && ((TileInvisECoreBlock) tile).blockName.equals(gtAwakenedName))
-                return true;
+                    return super.checkBlock(state, world, pos);
+                }
 
             else
                 return super.checkBlock(state, world, pos);

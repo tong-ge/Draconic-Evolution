@@ -90,33 +90,21 @@ public class InvisECoreBlock extends BlockBCore implements IRenderOverride, ITil
         if (tile instanceof TileInvisECoreBlock) {
 
             if (!((TileInvisECoreBlock) tile).blockName.isEmpty() && !player.capabilities.isCreativeMode) {
-                Block block;
-                String blockName = ((TileInvisECoreBlock) tile).blockName;
-                if (blockName.equals(EnergyCoreStructure.gtDraconiumName)){
-                    if (EnergyCoreStructure.gtDraconium != null){
-                        Block draconiumBlock = EnergyCoreStructure.gtDraconium.getBlock();
-                        spawnAsEntity(world, pos, new ItemStack(draconiumBlock, 1, draconiumBlock.getMetaFromState(EnergyCoreStructure.gtDraconium)));
-                    }
-                }
-                if (blockName.equals(EnergyCoreStructure.gtAwakenedName)){
-                    if (EnergyCoreStructure.gtAwakened != null){
-                        Block awakenedBlock = EnergyCoreStructure.gtAwakened.getBlock();
-                        spawnAsEntity(world, pos, new ItemStack(awakenedBlock, 1, awakenedBlock.getMetaFromState(EnergyCoreStructure.gtAwakened)));
-                    }
-                }
-                else{
-                    block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
 
-                    if (block != Blocks.AIR) {
+                Block block = Block.REGISTRY.getObject(new ResourceLocation(((TileInvisECoreBlock) tile).blockName));
+                if (!block.equals(Blocks.AIR)){
+                    if (((TileInvisECoreBlock) tile).isDefault) {
                         if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:particle_generator")) {
                             spawnAsEntity(world, pos, new ItemStack(block, 1, 2));
-                        }
-                        else {
+                        } else {
                             spawnAsEntity(world, pos, new ItemStack(block));
                         }
                     }
+                    else
+                        spawnAsEntity(world, pos, new ItemStack(block, 1, ((TileInvisECoreBlock) tile).metaData));
                 }
             }
+
 
             IMultiBlockPart master = ((TileInvisECoreBlock) tile).getController();
             if (master != null) {
@@ -131,36 +119,31 @@ public class InvisECoreBlock extends BlockBCore implements IRenderOverride, ITil
         TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileInvisECoreBlock) {
-            if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:draconium_block")) {
+            String blockName = ((TileInvisECoreBlock) tile).blockName;
+            if (blockName.equals("draconicevolution:draconium_block")) {
                 return new ItemStack(DEFeatures.draconiumBlock);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:draconic_block")) {
+            else if (blockName.equals("draconicevolution:draconic_block")) {
                 return new ItemStack(DEFeatures.draconicBlock);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("draconicevolution:particle_generator")) {
+            else if (blockName.equals("draconicevolution:particle_generator")) {
                 return new ItemStack(DEFeatures.particleGenerator, 1, 2);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("minecraft:glass")) {
+            else if (blockName.equals("minecraft:glass")) {
                 return new ItemStack(Blocks.GLASS);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals("minecraft:redstone_block")) {
+            else if (blockName.equals("minecraft:redstone_block")) {
                 return new ItemStack(Blocks.REDSTONE_BLOCK);
             }
-            else if (((TileInvisECoreBlock) tile).blockName.equals(EnergyCoreStructure.gtDraconiumName)) {
-                if (EnergyCoreStructure.gtDraconium != null) {
-                    Block draconiumBlock = EnergyCoreStructure.gtDraconium.getBlock();
-                    return new ItemStack(draconiumBlock, 1, draconiumBlock.getMetaFromState(EnergyCoreStructure.gtDraconium));
+            else if (!blockName.isEmpty()){
+                Block block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
+                if (!block.equals(Blocks.AIR)){
+                    if (((TileInvisECoreBlock) tile).isDefault)
+                        return new ItemStack(block);
+                    else
+                        return new ItemStack(block, 1, ((TileInvisECoreBlock) tile).metaData);
                 }
-                else
-                    return ItemStack.EMPTY;
-            }
-            else if (((TileInvisECoreBlock) tile).blockName.equals(EnergyCoreStructure.gtAwakenedName)) {
-                if (EnergyCoreStructure.gtAwakened != null) {
-                    Block awakenedBlock = EnergyCoreStructure.gtAwakened.getBlock();
-                    return new ItemStack(awakenedBlock, 1, awakenedBlock.getMetaFromState(EnergyCoreStructure.gtAwakened));
-                }
-                else
-                    return ItemStack.EMPTY;
+                return ItemStack.EMPTY;
             }
         }
 
