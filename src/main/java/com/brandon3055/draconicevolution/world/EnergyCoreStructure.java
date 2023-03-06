@@ -21,6 +21,8 @@ import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.properties.IMaterialProperty;
 import gregtech.api.unification.material.properties.MaterialProperties;
 import gregtech.api.unification.stack.MaterialStack;
+import gregtech.common.blocks.BlockCompressed;
+import gregtech.common.blocks.CompressedItemBlock;
 import gregtech.common.blocks.MetaBlocks;
 
 import net.minecraft.block.Block;
@@ -31,12 +33,15 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.Level;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -282,7 +287,7 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
         }
 
         IBlockState atPos = world.getBlockState(pos);
-        boolean invalid = !world.isAirBlock(pos) && (atPos.getBlock().getRegistryName() == null || !atPos.getBlock().equals(state.getBlock()));
+        boolean invalid = !world.isAirBlock(pos) && (atPos.getBlock().getRegistryName() == null || !atPos.equals(state));
 
         if (dist + 2 > pDist && !invalid) {
             return;
@@ -316,7 +321,33 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
 
         List<BakedQuad> blockQuads = ModelUtils.getModelQuads(state);
 
-        ModelUtils.renderQuadsARGB(blockQuads, (invalid ? 0x00500000 : 0x00404040) | alpha);
+        // Special case for GT Blocks
+        Block block = state.getBlock();
+
+        ItemStack itemstack = new ItemStack(block, 1, block.getMetaFromState(state));
+
+        if (block instanceof BlockCompressed) {
+            BlockCompressed compressed = (BlockCompressed) block;
+            Material material = state.getValue(compressed.variantProperty);
+            int color = material.getMaterialRGB();
+            int r = (color & 0xFF0000) >> (4 * Integer.BYTES);
+            int g = (color & 0x00FF00) >> (2 * Integer.BYTES);
+            int b = color & 0x0000FF;
+            if (invalid){
+                r = 255;
+                g = 0;
+                b = 0;
+            }
+            else {
+                r = MathHelper.clamp(r-50, 0, 255);
+                g = MathHelper.clamp(g-50, 0, 255);
+                b = MathHelper.clamp(b-50, 0, 255);
+            }
+
+            ModelUtils.renderQuadsRGB(blockQuads, r/255f, g/255f, b/255f);
+        }
+        else
+            ModelUtils.renderQuadsARGB(blockQuads, (invalid ? 0x00500000 : 0x00808080) | alpha);
 
         if (invalid) {
             GlStateManager.enableDepth();

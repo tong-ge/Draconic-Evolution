@@ -50,16 +50,20 @@ public class BlockStateMultiblockStorage extends MultiBlockStorage{
                 for (int z = 0; z < blockStorage[0][0].length; z++) {
                     BlockPos pos = new BlockPos(x, y, z);
                     if (!helper.checkBlock(blockStorage[x][y][z][0], world, pos.add(startPos))) {
-                        if (!helper.checkBlock(blockStorage[x][y][z][1], world, pos.add(startPos))) {
+                        if (blockStorage[x][y][z].length == 1){
                             helper.invalidBlock = startPos.add(pos);
                             helper.expectedBlock = new ItemStack(blockStorage[x][y][z][0].getBlock(), 1, blockStorage[x][y][z][0].getBlock().getMetaFromState(blockStorage[x][y][z][0])).getDisplayName();
                             return false;
+
+                        } else if (!helper.checkBlock(blockStorage[x][y][z][1], world, pos.add(startPos))) {
+                                helper.invalidBlock = startPos.add(pos);
+                                helper.expectedBlock = new ItemStack(blockStorage[x][y][z][0].getBlock(), 1, blockStorage[x][y][z][0].getBlock().getMetaFromState(blockStorage[x][y][z][0])).getDisplayName();
+                                return false;
+                            }
                         }
                     }
                 }
             }
-        }
-
         helper.invalidBlock = null;
         return true;
     }

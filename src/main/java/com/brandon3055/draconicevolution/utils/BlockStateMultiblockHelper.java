@@ -16,10 +16,10 @@ public class BlockStateMultiblockHelper extends MultiBlockHelper {
         IBlockState state = world.getBlockState(pos);
         if (expectedState == null) {
             return true;
-        } else if (expectedState.getBlock().equals(Block.getBlockFromName("air"))) {
+        } else if (expectedState.getBlock().equals(Blocks.AIR)) {
             return state.getBlock().isAir(state, world, pos);
         } else {
-            return state.getBlock().equals(expectedState.getBlock());
+            return state.equals(expectedState);
         }
     }
 
