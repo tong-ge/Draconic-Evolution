@@ -8,7 +8,7 @@ This is made for nomi-ceu, and requires GT as a dependency. However, custom GT b
 You can now use GT blocks, and Draconic Evolution Blocks, in the Energy Storage Core!
 
 How:
-Moves energy core structure to IBlockState, as well as adding a fallback block. Then, CT generated GT materials, "draconium" and "awakened_draconium" were inserted into the structure instead. Finally, appropriate adjustments were made to finalize the project, however, the build guide is still broken.
+Moves energy core structure to IBlockState, as well as adding a fallback block. Then, CT generated GT materials, "draconium" and "awakened_draconium" were inserted into the structure instead. Finally, appropriate adjustments were made to finalize the project.
 
 Note: if players de-activate and then reactivate their old core twice, the Draconic Evolution blocks will turn into their GT counterparts.
 
