@@ -1,9 +1,11 @@
-Draconic-Evolution
+Draconic-Evolution- Nomi-CEu Fork
 ==================
 
 Draconic Evolution adds powerful new tools, Items, weapons and Armor. The premise is the enigmatic ore - Draconium. As you progress you find it has many uses from the mundane such as machines and items, to the near-mystical at the top with Awakened Draconium to make extremely powerful armor and tools.
 
 This is made for nomi-ceu, and requires GT as a dependency. However, custom GT blocks, with names "draconium" and "awakened_draconium", are required for this to work properly.
+
+## Changes from DE 1.12.2:
 
 You can now use GT blocks, and Draconic Evolution Blocks, in the Energy Storage Core, and DE Reactor!
 
