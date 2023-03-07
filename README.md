@@ -18,7 +18,9 @@ Moves EnergyCoreStructure from String to IBlockState[], which also adds a fallba
 This mod is licensed under the [**Don't Be a Jerk License**](https://github.com/brandon3055/Draconic-Evolution/blob/master/LICENSE) created by CoFH.
 I herby grant permission to use this mod in any mod pack without the need to request permission from myself the owner (brandon3055) and the forker (IntegerLimit).
 
-Credits:
+## Credits:
+
 brandon3055 has done 99% of the work here. 
+
 [TechLord22](https://github.com/TechLord22) for the huge help in making these changes.
 Thank you!
