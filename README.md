@@ -5,12 +5,14 @@ Draconic Evolution adds powerful new tools, Items, weapons and Armor. The premis
 
 This is made for nomi-ceu, and requires GT as a dependency. However, custom GT blocks, with names "draconium" and "awakened_draconium", are required for this to work properly.
 
-You can now use GT blocks, and Draconic Evolution Blocks, in the Energy Storage Core!
+You can now use GT blocks, and Draconic Evolution Blocks, in the Energy Storage Core, and DE Reactor!
 
-How:
-Moves energy core structure to IBlockState, as well as adding a fallback block. Then, CT generated GT materials, "draconium" and "awakened_draconium" were inserted into the structure instead. Finally, appropriate adjustments were made to finalize the project.
+There's also a destruct button on the energy core! It will appear instead of the build guide button, when the core is valid. It destroys instantly (unlike the builder)!
 
-Note: if players de-activate and then reactivate their old core twice, the Draconic Evolution blocks will turn into their GT counterparts.
+Note: if players de-activate and then reactivate their old core twice, the Draconic Evolution blocks will turn into their GT counterparts. Also, DE Awakened Draconium put into the reactor automatically transforms into GT Awakened Draconium.
+
+Main Internal Change:
+Moves EnergyCoreStructure from String to IBlockState[], which also adds a fallback block. Also, InvisECoreBlock now stores metadata.
 
 ## License / Use in Modpacks
 This mod is licensed under the [**Don't Be a Jerk License**](https://github.com/brandon3055/Draconic-Evolution/blob/master/LICENSE) created by CoFH.
