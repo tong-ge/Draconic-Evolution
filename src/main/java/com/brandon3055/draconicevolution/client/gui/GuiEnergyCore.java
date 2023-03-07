@@ -35,6 +35,7 @@ public class GuiEnergyCore extends GuiContainer {
     private GuiButton tierDown;
     private GuiButton toggleGuide;
     private GuiButton assembleCore;
+    private GuiButton destroyCore;
     private GuiButton layerPlus;
     private GuiButton layerMinus;
     public static int layer = -1;
@@ -67,6 +68,9 @@ public class GuiEnergyCore extends GuiContainer {
 
         buttonList.add(layerMinus = new GuiButtonAHeight(5, guiLeft + 5, guiTop - 13, 70, 12, "Layer-"));
         buttonList.add(layerPlus = new GuiButtonAHeight(6, guiLeft + 105, guiTop - 13, 70, 12, "Layer+"));
+
+        buttonList.add(destroyCore = new GuiButtonAHeight(7, guiLeft + 9, guiTop + 73 + 10, 162, 12, I18n.format("button.de.destroyCore.txt")));
+
         layerPlus.visible = tile.buildGuide.value;
         layerMinus.visible = tile.buildGuide.value;
 
@@ -209,9 +213,11 @@ public class GuiEnergyCore extends GuiContainer {
             tierDown.enabled = tile.tier.value > 1;
         }
 
-        tierUp.visible = tierDown.visible = toggleGuide.visible = !tile.active.value;
+        tierUp.visible = tierDown.visible = !tile.active.value;
+        toggleGuide.visible = !tile.active.value && !tile.coreValid.value;
         assembleCore.visible = !tile.coreValid.value;
         activate.visible = tile.coreValid.value;
+        destroyCore.visible = tile.coreValid.value && !tile.active.value;
 
         layerPlus.visible = tile.buildGuide.value;
         layerMinus.visible = tile.buildGuide.value;
@@ -219,7 +225,7 @@ public class GuiEnergyCore extends GuiContainer {
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id < 5) {
+        if (button.id < 5 || button.id > 6) {
             tile.sendPacketToServer(output -> {
             }, button.id);
         } else {
@@ -230,6 +236,7 @@ public class GuiEnergyCore extends GuiContainer {
             }
             layer = MathHelper.clip(layer, -1, 6);
         }
+        updateButtonStates();
     }
 
     public static void drawEnergyBar(Gui gui, int posX, int posY, int size, boolean horizontal, long energy, long maxEnergy, boolean toolTip, int mouseX, int mouseY) {

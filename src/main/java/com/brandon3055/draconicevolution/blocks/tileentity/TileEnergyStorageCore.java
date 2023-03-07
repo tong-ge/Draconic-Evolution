@@ -9,27 +9,42 @@ import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.GuiHandler;
 import com.brandon3055.draconicevolution.api.IExtendedRFStorage;
 import com.brandon3055.draconicevolution.lib.EnergyCoreBuilder;
+import com.brandon3055.draconicevolution.utils.BlockStateMultiblockStorage;
 import com.brandon3055.draconicevolution.utils.LogHelper;
 import com.brandon3055.draconicevolution.world.EnergyCoreStructure;
+import mezz.jei.util.Log;
+import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static net.minecraft.block.Block.spawnAsEntity;
 import static net.minecraft.util.text.TextFormatting.RED;
 
 /**
@@ -185,6 +200,47 @@ public class TileEnergyStorageCore extends TileBCBase implements ITickable, IExt
         return (long) DEConfig.coreCapacity[tier.value - 1];
     }
 
+    public void destroyCore(EntityPlayer player){
+        BlockStateMultiblockStorage storage = coreStructure.getStorageForTier(tier.value);
+        BlockPos start = getPos().add(coreStructure.getCoreOffset(tier.value));
+        Map<BlockPos, IBlockState> toRemove = new HashMap<>();
+        storage.forEachBlockState(start, toRemove::put);
+        World world = getWorld();
+        for (BlockPos blockPos: toRemove.keySet()) {
+                IBlockState state = toRemove.get(blockPos);
+                if (state != null && !state.equals(Blocks.AIR.getDefaultState()) &&
+                        !state.equals(Block.REGISTRY.getObject(
+                                new ResourceLocation("draconicevolution:energy_storage_core"))
+                                .getDefaultState())){
+
+                    if (!player.capabilities.isCreativeMode){
+                        ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+                        if (!insertItem(stack, player)){
+                            spawnAsEntity(world, blockPos, stack);
+                        }
+                    }
+
+                    world.setBlockState(blockPos, Blocks.AIR.getDefaultState());
+                    SoundType soundtype = state.getBlock().getSoundType(state, world, pos, player);
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, soundtype.getBreakSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                }
+            }
+        }
+
+    private boolean insertItem(ItemStack toInsert, EntityPlayer player){
+        IItemHandler handler = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        if (handler == null) return false;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack inSlot = handler.getStackInSlot(i);
+            if (inSlot.isEmpty() || (inSlot.getItem().equals(toInsert.getItem()) && inSlot.getMetadata() == toInsert.getMetadata() && inSlot.getCount() < toInsert.getMaxStackSize())) {
+                ItemStack inserted = handler.insertItem(i, toInsert, false);
+                if (inserted.isEmpty() || inserted.getItem().equals(Items.AIR))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void receivePacketFromClient(MCDataInput data, EntityPlayerMP client, int id) {
         if (id == 0) { //Activate
@@ -198,12 +254,14 @@ public class TileEnergyStorageCore extends TileBCBase implements ITickable, IExt
         else if (id == 1) { //Tier Up
             if (!active.value && tier.value < 8) {
                 tier.value++;
+                buildGuide.value = false;
                 validateStructure();
             }
         }
         else if (id == 2) { //Tier Down
             if (!active.value && tier.value > 1) {
                 tier.value--;
+                buildGuide.value = false;
                 validateStructure();
             }
         }
@@ -213,8 +271,15 @@ public class TileEnergyStorageCore extends TileBCBase implements ITickable, IExt
             }
         }
         else if (id == 4) { //Build
-            if (!active.value) {
+            if (!active.value && !coreValid.value) {
                 startBuilder(client);
+            }
+        }
+
+        else if (id == 7) { //Destroy
+            if (coreValid.value && !active.value){
+                destroyCore(client);
+
             }
         }
     }

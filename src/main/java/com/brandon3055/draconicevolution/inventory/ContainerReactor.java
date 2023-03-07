@@ -4,6 +4,16 @@ import codechicken.lib.math.MathHelper;
 import com.brandon3055.brandonscore.inventory.ContainerBCBase;
 import com.brandon3055.draconicevolution.DEFeatures;
 import com.brandon3055.draconicevolution.blocks.reactor.tileentity.TileReactorCore;
+import com.brandon3055.draconicevolution.world.EnergyCoreStructure;
+import gregtech.api.GregTechAPI;
+import gregtech.api.unification.OreDictUnifier;
+import gregtech.api.unification.material.Material;
+import gregtech.api.unification.material.Materials;
+import gregtech.api.unification.ore.OrePrefix;
+import gregtech.common.blocks.MetaBlocks;
+import gregtech.common.items.MetaItem1;
+import gregtech.common.items.MetaItems;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
@@ -116,6 +126,16 @@ public class ContainerReactor extends ContainerBCBase<TileReactorCore> {
         return ItemStack.EMPTY;
     }
 
+    // Returns list with [0] = block, [1] = ingot, [2] = nugget
+    public static ItemStack[] getGTDraconium(){
+        Material gtDraconiumMaterial = GregTechAPI.MaterialRegistry.get("awakened_draconium");
+        IBlockState gtDraconiumState = MetaBlocks.COMPRESSED.get(gtDraconiumMaterial).getBlock(gtDraconiumMaterial);
+        ItemStack gtDraconiumBlock = new ItemStack(gtDraconiumState.getBlock(), 1, gtDraconiumState.getBlock().getMetaFromState(gtDraconiumState));
+        ItemStack gtDraconiumIngot = OreDictUnifier.get(OrePrefix.ingot, gtDraconiumMaterial, 1);
+        ItemStack gtDraconiumNugget = OreDictUnifier.get(OrePrefix.nugget, gtDraconiumMaterial, 1);
+        return new ItemStack[]{gtDraconiumBlock, gtDraconiumIngot, gtDraconiumNugget};
+    }
+
     private int getFuelValue(ItemStack stack) {
         if (stack.isEmpty()) {
             return 0;
@@ -129,6 +149,18 @@ public class ContainerReactor extends ContainerBCBase<TileReactorCore> {
         else if (stack.getItem() == DEFeatures.nugget && stack.getItemDamage() == 1) {
             return stack.getCount() * 16;
         }
+        else if (GregTechAPI.MaterialRegistry.get("awakened_draconium") != null){
+        }
+            ItemStack[] gtDraconium = getGTDraconium();
+            if (stack.getItem().equals(gtDraconium[0].getItem()) && stack.getMetadata() == gtDraconium[0].getMetadata()) {
+                return stack.getCount() * 1296;
+            }
+            else if (stack.getItem().equals(gtDraconium[1].getItem()) && stack.getMetadata() == gtDraconium[1].getMetadata()) {
+                return stack.getCount() * 144;
+            }
+            else if (stack.getItem().equals(gtDraconium[2].getItem()) && stack.getMetadata() == gtDraconium[2].getMetadata()) {
+                return stack.getCount() * 16;
+            }
         return 0;
     }
 
@@ -185,14 +217,28 @@ public class ContainerReactor extends ContainerBCBase<TileReactorCore> {
                 int ingot = (fuel % 1296) / 144;
                 int nugget = ((fuel % 1296) % 144) / 16;
 
-                if (index == 0 && block > 0) {
-                    return new ItemStack(DEFeatures.draconicBlock, block);
+                if (GregTechAPI.MaterialRegistry.get("awakened_draconium") != null) {
+                    ItemStack[] gtDraconium = ContainerReactor.getGTDraconium();
+                    if (index == 0 && block > 0) {
+                        return new ItemStack(gtDraconium[0].getItem(), block, gtDraconium[0].getMetadata());
+                    }
+                    else if (index == 1 && ingot > 0) {
+                        return new ItemStack(gtDraconium[1].getItem(), ingot, gtDraconium[1].getMetadata());
+                    }
+                    else if (index == 2 && nugget > 0) {
+                        return new ItemStack(gtDraconium[2].getItem(), nugget, gtDraconium[2].getMetadata());
+                    }
                 }
-                else if (index == 1 && ingot > 0) {
-                    return new ItemStack(DEFeatures.draconicIngot, ingot);
-                }
-                else if (index == 2 && nugget > 0) {
-                    return new ItemStack(DEFeatures.nugget, nugget, 1);
+                else{
+                    if (index == 0 && block > 0) {
+                        return new ItemStack(DEFeatures.draconicBlock, block);
+                    }
+                    else if (index == 1 && ingot > 0) {
+                        return new ItemStack(DEFeatures.draconicIngot, ingot);
+                    }
+                    else if (index == 2 && nugget > 0) {
+                        return new ItemStack(DEFeatures.nugget, nugget, 1);
+                    }
                 }
             }
             else {

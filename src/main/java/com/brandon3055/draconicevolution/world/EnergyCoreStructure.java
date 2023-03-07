@@ -51,7 +51,7 @@ import java.util.Objects;
  * Created by brandon3055 on 1/4/2016.
  */
 public class EnergyCoreStructure extends BlockStateMultiblockHelper {
-        private final int FLAG_RENDER = 0;
+    private final int FLAG_RENDER = 0;
     private final int FLAG_FORME = 1;
     private final int FLAG_REVERT = 2;
     private BlockStateMultiblockStorage[] structureTiers = new BlockStateMultiblockStorage[8];
@@ -323,8 +323,6 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
 
         // Special case for GT Blocks
         Block block = state.getBlock();
-
-        ItemStack itemstack = new ItemStack(block, 1, block.getMetaFromState(state));
 
         if (block instanceof BlockCompressed) {
             BlockCompressed compressed = (BlockCompressed) block;

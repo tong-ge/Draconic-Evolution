@@ -113,7 +113,7 @@ public class EnergyCoreBuilder implements IProcess {
             ItemStack inSlot = handler.getStackInSlot(i);
             if (!inSlot.isEmpty() && inSlot.getItem().equals(toExtract.getItem()) && inSlot.getMetadata() == toExtract.getMetadata()) {
                 ItemStack extracted = handler.extractItem(i, 1, false);
-                if (!extracted.isEmpty() && extracted.getItem().equals(toExtract.getItem())) {
+                if (!extracted.isEmpty() && extracted.getItem().equals(toExtract.getItem()) && extracted.getMetadata() == toExtract.getMetadata()) {
                     return true;
                 }
             }
