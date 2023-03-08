@@ -58,20 +58,20 @@ public class ToolUpgrade extends ItemBCore implements IRenderOverride {
     private static final int[] UPGRADE_COST = new int[]{32000, 512000, 32000000, 256000000};
 
     static {
-        registerUpgrade(0, RF_CAPACITY, 4);
-        registerUpgrade(1, DIG_SPEED, 4);
-        registerUpgrade(2, DIG_AOE, 4);
+        registerUpgrade(0, RF_CAPACITY, 3);
+        registerUpgrade(1, DIG_SPEED, 3);
+        registerUpgrade(2, DIG_AOE, 3);
         //registerUpgrade(DIG_DEPTH);
-        registerUpgrade(3, ATTACK_DAMAGE, 4);
-        registerUpgrade(4, ATTACK_AOE, 4);
+        registerUpgrade(3, ATTACK_DAMAGE, 3);
+        registerUpgrade(4, ATTACK_AOE, 3);
         //registerUpgrade(ATTACK_SPEED);
-        registerUpgrade(5, ARROW_DAMAGE, 4);
+        registerUpgrade(5, ARROW_DAMAGE, 3);
         registerUpgrade(6, DRAW_SPEED, 3);
-        registerUpgrade(7, ARROW_SPEED, 4);
-        registerUpgrade(8, SHIELD_CAPACITY, 4);
-        registerUpgrade(9, SHIELD_RECOVERY, 4);
-        registerUpgrade(10, MOVE_SPEED, 4);
-        registerUpgrade(11, JUMP_BOOST, 4);
+        registerUpgrade(7, ARROW_SPEED, 3);
+        registerUpgrade(8, SHIELD_CAPACITY, 3);
+        registerUpgrade(9, SHIELD_RECOVERY, 3);
+        registerUpgrade(10, MOVE_SPEED, 3);
+        registerUpgrade(11, JUMP_BOOST, 3);
     }
 
     public ToolUpgrade() {
