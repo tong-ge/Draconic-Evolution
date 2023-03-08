@@ -9,7 +9,9 @@ This is made for nomi-ceu, and requires GT as a dependency. However, custom GT b
 
 You can now use GT blocks, and Draconic Evolution Blocks, in the Energy Storage Core, and DE Reactor!
 
-There's also a destruct button on the energy core! It will appear instead of the build guide button, when the core is valid. It destroys instantly (unlike the builder)!
+There's also a destruct button on the energy core! It will appear instead of the build guide button, when the core is valid. It destroys instantly (unlike the builder)! 
+
+Useless Chaotic Tier upgrade key fusion recipes, with no catalyst or output, have been removed.
 
 Note: if players de-activate and then reactivate their old core twice, the Draconic Evolution blocks will turn into their GT counterparts. Also, DE Awakened Draconium put into the reactor automatically transforms into GT Awakened Draconium.
 
@@ -19,6 +21,10 @@ Moves EnergyCoreStructure from String to IBlockState[], which also adds a fallba
 ## License / Use in Modpacks
 This mod is licensed under the [**Don't Be a Jerk License**](https://github.com/brandon3055/Draconic-Evolution/blob/master/LICENSE) created by CoFH.
 I herby grant permission to use this mod in any mod pack without the need to request permission from myself the owner (brandon3055) and the forker (IntegerLimit).
+
+### TODO:
+* Maybe make the destruct button like builder
+* Maybe later, chaotic tier upgrades for tools and armor will be implemented.
 
 ## Credits:
 
