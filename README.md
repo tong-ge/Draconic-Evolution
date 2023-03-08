@@ -23,7 +23,8 @@ This mod is licensed under the [**Don't Be a Jerk License**](https://github.com/
 I herby grant permission to use this mod in any mod pack without the need to request permission from myself the owner (brandon3055) and the forker (IntegerLimit).
 
 ### TODO:
-* Maybe make the destruct button like builder
+* Make config for builder and destroy. Config controls if it will be instant or at a speed of 1 block/t.
+* Destroy Core sound is defeaning at t8. Make it one sound if instant, same with builder when that instant is implemented.
 * Maybe later, chaotic tier upgrades for tools and armor will be implemented.
 
 ## Credits:
