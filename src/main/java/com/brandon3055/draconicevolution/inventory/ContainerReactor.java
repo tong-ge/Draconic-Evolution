@@ -217,7 +217,7 @@ public class ContainerReactor extends ContainerBCBase<TileReactorCore> {
                 int ingot = (fuel % 1296) / 144;
                 int nugget = ((fuel % 1296) % 144) / 16;
 
-                if (GregTechAPI.MaterialRegistry.get("awakened_draconium") != null) {
+                if (GregTechAPI.materialManager.getMaterial("awakened_draconium") != null) {
                     ItemStack[] gtDraconium = ContainerReactor.getGTDraconium();
                     if (index == 0 && block > 0) {
                         return new ItemStack(gtDraconium[0].getItem(), block, gtDraconium[0].getMetadata());
