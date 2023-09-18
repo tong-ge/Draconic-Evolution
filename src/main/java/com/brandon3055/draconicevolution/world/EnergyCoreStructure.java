@@ -63,8 +63,8 @@ public class EnergyCoreStructure extends BlockStateMultiblockHelper {
     public EnergyCoreStructure initialize(TileEnergyStorageCore core) {
 
         // Initialize Custom Materials
-        Material gtDraconiumMaterial = GregTechAPI.MaterialRegistry.get("draconium");
-        Material gtAwakenedMaterial = GregTechAPI.MaterialRegistry.get("awakened_draconium");
+        Material gtDraconiumMaterial = GregTechAPI.materialManager.getMaterial("draconium");
+        Material gtAwakenedMaterial = GregTechAPI.materialManager.getMaterial("awakened_draconium");
 
         // Empty
         e = new IBlockState[]{Blocks.AIR.getDefaultState()};
